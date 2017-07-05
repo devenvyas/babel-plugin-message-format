@@ -32,10 +32,11 @@ module.exports = function messageFormat({ types: t }) {
       CallExpression(path, { opts }) {
         var callee = path.node.callee.name;
         var translation_target = path.node.arguments[0].value;
-        var translation_value = formatMessage(translation_target);
         var { translations, locale } = loadLocaleData(opts.localeLoader);
+        var translation_value;
 
         setupFormatter(translations, locale);
+        translation_value = formatMessage(translation_target);
 
         if (callee === '__') {
           path.replaceWith(t.StringLiteral(translation_value));
