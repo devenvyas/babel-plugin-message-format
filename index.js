@@ -11,8 +11,8 @@ var setupFormatter = (function() {
     var messages = translations.messages;
 
     instance = formatMessage.setup({
-      translations: { 'id-id': messages },
-      locale: 'id-id',
+      translations: { [locale]: messages },
+      locale: locale,
       missingTranslation: 'ignore'
     });
 
@@ -30,6 +30,9 @@ module.exports = function messageFormat({ types: t }) {
   return {
     visitor: {
       CallExpression(path, { opts }) {
+        if (callee !== '__')
+          return;
+
         var callee = path.node.callee.name;
         var translation_target = path.node.arguments[0].value;
         var { translations, locale } = loadLocaleData(opts.localeLoader);
@@ -38,9 +41,7 @@ module.exports = function messageFormat({ types: t }) {
         setupFormatter(translations, locale);
         translation_value = formatMessage(translation_target);
 
-        if (callee === '__') {
-          path.replaceWith(t.StringLiteral(translation_value));
-        }
+        path.replaceWith(t.StringLiteral(translation_value));
       },
     },
   };
