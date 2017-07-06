@@ -30,10 +30,9 @@ module.exports = function messageFormat({ types: t }) {
   return {
     visitor: {
       CallExpression(path, { opts }) {
-        if (callee !== '__')
+        if (path.node.callee.name !== '__')
           return;
 
-        var callee = path.node.callee.name;
         var translation_target = path.node.arguments[0].value;
         var { translations, locale } = loadLocaleData(opts.localeLoader);
         var translation_value;
